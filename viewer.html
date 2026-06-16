@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Agencia · Viewer</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg: #0c0c0e;
+  --surface: #13131a;
+  --surface2: #1a1a24;
+  --border: rgba(255,255,255,0.07);
+  --text: rgba(255,255,255,0.88);
+  --dim: rgba(255,255,255,0.38);
+  --green: #d2e823;
+  --navy: #151a28;
+  --gold: #B89650;
+  --red: #ff5c5c;
+  --teal: #6ee7b7;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+/* ══ SIDEBAR ══════════════════════════════════════════════════ */
+#sidebar {
+  width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.s-logo {
+  padding: 20px 18px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.s-logo-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+.s-logo-sub {
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 2px;
+}
+
+.s-section {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 16px 18px 6px;
+}
+
+.s-item {
+  margin: 1px 8px;
+  padding: 8px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transition: all 0.12s;
+  user-select: none;
+}
+.s-item:hover { background: rgba(255,255,255,0.05); }
+.s-item.active {
+  background: rgba(210,232,35,0.08);
+  border-color: rgba(210,232,35,0.18);
+}
+.s-icon { font-size: 15px; flex-shrink: 0; }
+.s-label { flex: 1; font-size: 12px; color: var(--dim); }
+.s-item.active .s-label { color: var(--green); }
+.s-item:hover .s-label { color: var(--text); }
+.s-tag {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: rgba(255,255,255,0.07);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--dim);
+}
+.s-item.active .s-tag { background: rgba(210,232,35,0.15); color: var(--green); }
+
+.s-spacer { flex: 1; }
+.s-footer {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: rgba(255,255,255,0.18);
+  line-height: 1.7;
+}
+
+/* ══ MAIN ═════════════════════════════════════════════════════ */
+#main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+/* ── Toolbar ── */
+#toolbar {
+  height: 48px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+.tb-title { font-size:13px; font-weight:600; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tb-dim {
+  font-size: 10px;
+  color: var(--dim);
+  background: rgba(255,255,255,0.05);
+  padding: 3px 9px;
+  border-radius: 5px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.tb-btn {
+  height: 28px;
+  padding: 0 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  display: flex; align-items: center; gap: 5px;
+  flex-shrink: 0;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+.tb-btn:hover { background: rgba(255,255,255,0.1); }
+.tb-btn.green { background: var(--green); color: var(--navy); border-color: transparent; font-weight:700; }
+.tb-btn.green:hover { opacity: 0.85; }
+
+.zoom-grp { display:flex; align-items:center; gap:3px; }
+.z-btn {
+  width:26px; height:26px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  cursor: pointer;
+  font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  transition: background 0.1s;
+  flex-shrink:0;
+}
+.z-btn:hover { background: rgba(255,255,255,0.12); }
+#zlabel { font-size:10px; color:var(--dim); min-width:34px; text-align:center; }
+
+.sep { width:1px; height:20px; background: var(--border); flex-shrink:0; }
+
+/* ── Canvas ── */
+#canvas {
+  flex:1;
+  overflow:auto;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:32px;
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 50% 0, rgba(210,232,35,0.025) 0%, transparent 50%),
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+}
+
+#fw {
+  transform-origin: top center;
+  transition: transform 0.15s ease;
+}
+
+iframe {
+  border: none;
+  display: block;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 24px 60px rgba(0,0,0,0.65);
+}
+
+/* ── Welcome ── */
+#welcome {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  color:var(--dim);
+  text-align:center;
+  padding:40px;
+}
+.wl-icon { font-size:40px; opacity:0.25; }
+.wl-title { font-size:16px; font-weight:600; color:var(--text); }
+.wl-sub { font-size:12px; max-width:300px; line-height:1.7; }
+
+/* ══ RIGHT PANEL ══════════════════════════════════════════════ */
+#rpanel {
+  width: 264px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* Tabs */
+.r-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.r-tab {
+  flex:1;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.12s;
+}
+.r-tab.active { color: var(--green); border-bottom-color: var(--green); }
+.r-tab:hover:not(.active) { color: var(--text); }
+
+.r-panel-body { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+
+/* — Notes tab — */
+#tab-notes { display:flex; flex-direction:column; height:100%; }
+.note-form { padding:14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
+.fl { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--dim); margin-bottom:3px; }
+
+select, textarea {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.12s;
+}
+select:focus, textarea:focus { border-color: rgba(210,232,35,0.35); }
+textarea { resize:none; height:72px; line-height:1.5; }
+option { background:#1a1a2a; }
+
+.add-btn {
+  background: var(--green);
+  color: var(--navy);
+  border: none;
+  border-radius: 7px;
+  padding: 9px;
+  font-size:10px; font-weight:800;
+  letter-spacing: 2px; text-transform:uppercase;
+  cursor:pointer; width:100%;
+  font-family:inherit;
+  transition: opacity 0.1s;
+}
+.add-btn:hover { opacity:0.85; }
+
+#notes-list { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:7px; }
+
+.note-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+.nc-type { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+.nc-type.change { color: var(--green); }
+.nc-type.ok { color: var(--teal); }
+.nc-type.question { color: var(--gold); }
+.nc-text { font-size:11px; color:var(--dim); line-height:1.5; }
+.nc-ts { font-size:9px; color:rgba(255,255,255,0.18); margin-top:5px; display:flex; justify-content:space-between; align-items:center; }
+.nc-del { cursor:pointer; opacity:0.4; transition:opacity 0.1s; }
+.nc-del:hover { opacity:1; color:var(--red); }
+
+.empty-state { text-align:center; padding:32px 16px; font-size:11px; color:rgba(255,255,255,0.15); line-height:1.8; }
+
+/* — Pexels tab — */
+#tab-pexels { display:none; flex-direction:column; height:100%; }
+.px-search { padding:12px; border-bottom:1px solid var(--border); display:flex; gap:6px; }
+.px-input {
+  flex:1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius:7px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:12px;
+  padding:7px 10px;
+  outline:none;
+}
+.px-input:focus { border-color: rgba(210,232,35,0.35); }
+.px-go {
+  padding:0 12px;
+  background: var(--green);
+  color: var(--navy);
+  border:none; border-radius:7px;
+  cursor:pointer;
+  font-weight:800; font-size:11px;
+  font-family:inherit;
+}
+.px-toggle { display:flex; gap:4px; padding:0 12px 10px; }
+.px-t-btn {
+  flex:1; padding:5px 8px;
+  background: rgba(255,255,255,0.04);
+  border:1px solid var(--border); border-radius:6px;
+  color:var(--dim); cursor:pointer;
+  font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  font-family:inherit;
+  transition:all 0.1s;
+}
+.px-t-btn.active { background:rgba(210,232,35,0.1); border-color:rgba(210,232,35,0.25); color:var(--green); }
+
+#px-results { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:8px; }
+
+.px-card {
+  background: rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  cursor:pointer;
+  transition: border-color 0.12s;
+}
+.px-card:hover { border-color: rgba(210,232,35,0.3); }
+.px-thumb {
+  width:100%; height:120px;
+  object-fit:cover; display:block;
+  background:#1a1a2a;
+}
+.px-card-info { padding:9px 10px; display:flex; justify-content:space-between; align-items:center; }
+.px-card-name { font-size:10px; color:var(--dim); }
+.px-card-actions { display:flex; gap:4px; }
+.px-dl-btn {
+  font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  padding:4px 8px; border-radius:5px; cursor:pointer; border:none;
+  font-family:inherit; transition:all 0.1s;
+}
+.px-dl-btn.photo { background:rgba(210,232,35,0.12); color:var(--green); }
+.px-dl-btn.photo:hover { background:rgba(210,232,35,0.22); }
+.px-dl-btn.video { background:rgba(184,150,80,0.12); color:var(--gold); }
+.px-dl-btn.video:hover { background:rgba(184,150,80,0.22); }
+
+.px-empty { text-align:center; padding:40px 16px; font-size:11px; color:rgba(255,255,255,0.15); line-height:1.8; }
+.px-loading { text-align:center; padding:32px; font-size:11px; color:var(--dim); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:3px; height:3px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.09); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="s-logo">
+    <div class="s-logo-name">Agencia · Viewer</div>
+    <div class="s-logo-sub">DIRECTED DECO</div>
+  </div>
+
+  <div class="s-section">Brain 1 — Marketing</div>
+
+  <div class="s-item" id="nav-post"
+    onclick="load(this,'brain1/entregables/posts/post-presentacion-coverstyl-052026.html','Post — Presentación','1080 × 1080','post')">
+    <span class="s-icon">🖼</span><span class="s-label">Post Presentación</span><span class="s-tag">Feed</span>
+  </div>
+
+  <div class="s-item" id="nav-car"
+    onclick="load(this,'brain1/entregables/carruseles/carrusel-presentacion-coverstyl-052026.html','Carrusel 7 slides','1080 × 1080 × 7','carousel')">
+    <span class="s-icon">📱</span><span class="s-label">Carrusel Presentación</span><span class="s-tag">Carousel</span>
+  </div>
+
+  <div class="s-section">Brain 1 — Videos</div>
+
+  <div class="s-item" id="nav-reel" onclick="showReel(this)">
+    <span class="s-icon">🎬</span><span class="s-label">Reel Cover Styl' 36s</span><span class="s-tag">Reel</span>
+  </div>
+
+  <div class="s-section">Brain 2 — Ops</div>
+
+  <div class="s-item" style="opacity:.3;pointer-events:none">
+    <span class="s-icon">📋</span><span class="s-label">Propuestas</span><span class="s-tag">Vacío</span>
+  </div>
+  <div class="s-item" style="opacity:.3;pointer-events:none">
+    <span class="s-icon">📊</span><span class="s-label">Presentaciones</span><span class="s-tag">Vacío</span>
+  </div>
+
+  <div class="s-spacer"></div>
+  <div class="s-footer">
+    Pexels API conectada ✓<br>
+    Notas guardadas localmente
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="toolbar">
+    <div class="tb-title" id="tb-title">Selecciona un entregable</div>
+    <div class="tb-dim" id="tb-dim" style="display:none"></div>
+    <div class="sep" id="sep1" style="display:none"></div>
+    <div class="zoom-grp" id="zgrp" style="display:none">
+      <button class="z-btn" onclick="dz(-0.1)">−</button>
+      <span id="zlabel">50%</span>
+      <button class="z-btn" onclick="dz(0.1)">+</button>
+      <button class="z-btn" onclick="fit()" title="Fit">⊡</button>
+    </div>
+    <div class="sep" id="sep2" style="display:none"></div>
+    <button class="tb-btn" id="btn-dl-img" style="display:none" onclick="downloadFrame()">⬇ Descargar imagen</button>
+    <button class="tb-btn green" id="btn-open" style="display:none" onclick="openBrowser()">↗ Abrir</button>
+  </div>
+
+  <div id="canvas">
+    <div id="welcome">
+      <div class="wl-icon">🎨</div>
+      <div class="wl-title">Viewer de Entregables</div>
+      <div class="wl-sub">Selecciona un post, carrusel o video del panel izquierdo para verlo a tamaño real.</div>
+    </div>
+    <div id="fw" style="display:none"></div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div id="rpanel">
+  <div class="r-tabs">
+    <div class="r-tab active" id="rtab-notes" onclick="switchTab('notes')">Notas</div>
+    <div class="r-tab" id="rtab-pexels" onclick="switchTab('pexels')">Pexels</div>
+  </div>
+
+  <div class="r-panel-body">
+
+    <!-- NOTES TAB -->
+    <div id="tab-notes">
+      <div class="note-form">
+        <div>
+          <div class="fl">Tipo</div>
+          <select id="fb-type">
+            <option value="change">✏️ Cambio — algo a modificar</option>
+            <option value="ok">✅ Aprobado — está perfecto</option>
+            <option value="question">❓ Pregunta / duda</option>
+          </select>
+        </div>
+        <div>
+          <div class="fl">Entregable</div>
+          <select id="fb-target">
+            <option value="post">Post presentación</option>
+            <option value="carrusel">Carrusel</option>
+            <option value="reel">Reel</option>
+            <option value="general">General</option>
+          </select>
+        </div>
+        <div>
+          <div class="fl">Nota</div>
+          <textarea id="fb-text" placeholder="Ej: 'la letra está muy chica en slide 2', 'el fondo verde no contrasta con el texto', 'cambiar el CTA por...'"></textarea>
+        </div>
+        <button class="add-btn" onclick="addNote()">Guardar nota →</button>
+      </div>
+      <div id="notes-list"></div>
+    </div>
+
+    <!-- PEXELS TAB -->
+    <div id="tab-pexels">
+      <div class="px-search">
+        <input class="px-input" id="px-q" placeholder="cocina moderna, interior..." onkeydown="if(event.key==='Enter')pxSearch()" />
+        <button class="px-go" onclick="pxSearch()">→</button>
+      </div>
+      <div class="px-toggle">
+        <button class="px-t-btn active" id="pxt-photo" onclick="setPxMode('photo')">Fotos</button>
+        <button class="px-t-btn" id="pxt-video" onclick="setPxMode('video')">Videos</button>
+      </div>
+      <div id="px-results">
+        <div class="px-empty">Busca imágenes o videos de Pexels para usar en tus entregables.<br><br>Se descargan directo a la carpeta de assets.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- html2canvas for screenshot -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// ── State ────────────────────────────────────────────────────────
+let curFile = null, curType = null, zoom = 0.5;
+let notes = JSON.parse(localStorage.getItem('ag-notes') || '[]');
+let pxMode = 'photo';
+const PEXELS_KEY = 'asgkpbqyPLclOGMmJOCIVKGDF3x4eDfqyoMrJ00HeAkRBDAyHUNVnn9x';
+
+// ── Load deliverable ──────────────────────────────────────────────
+function load(el, path, title, dims, type) {
+  curFile = path; curType = type;
+  document.querySelectorAll('.s-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+
+  document.getElementById('tb-title').textContent = title;
+  document.getElementById('tb-dim').textContent = dims;
+  document.getElementById('tb-dim').style.display = 'block';
+  document.getElementById('sep1').style.display = 'block';
+  document.getElementById('sep2').style.display = 'block';
+  document.getElementById('zgrp').style.display = 'flex';
+  document.getElementById('btn-dl-img').style.display = 'flex';
+  document.getElementById('btn-open').style.display = 'flex';
+
+  document.getElementById('welcome').style.display = 'none';
+  const fw = document.getElementById('fw');
+  fw.style.display = 'block';
+
+  // For carousel show full height, post show 1080x1080
+  if (type === 'carousel') {
+    fw.innerHTML = `<iframe src="${path}" width="1080" height="8000" id="main-frame" onload="autoHeight(this)"></iframe>`;
+  } else {
+    fw.innerHTML = `<iframe src="${path}" width="1080" height="1080" id="main-frame"></iframe>`;
+  }
+
+  document.getElementById('fb-target').value = type === 'post' ? 'post' : type === 'carousel' ? 'carrusel' : 'reel';
+  fit();
+}
+
+function autoHeight(iframe) {
+  try {
+    // Remove the caption box and show only slides
+    const doc = iframe.contentDocument;
+    // Hide caption boxes if present
+    doc.querySelectorAll('.caption-box').forEach(el => el.style.display = 'none');
+    const h = doc.body.scrollHeight;
+    iframe.height = h;
+    fit();
+  } catch(e) {}
+}
+
+function showReel(el) {
+  document.querySelectorAll('.s-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tb-title').textContent = 'Reel Cover Styl\' — 36s · 1080×1920';
+  document.getElementById('tb-dim').textContent = '1080 × 1920 · 30fps';
+  document.getElementById('tb-dim').style.display = 'block';
+  document.getElementById('sep1').style.display = 'block';
+  document.getElementById('zgrp').style.display = 'none';
+  document.getElementById('btn-dl-img').style.display = 'none';
+  document.getElementById('btn-open').style.display = 'none';
+  document.getElementById('sep2').style.display = 'none';
+
+  document.getElementById('welcome').style.display = 'none';
+  const fw = document.getElementById('fw');
+  fw.style.display = 'block';
+  fw.style.transform = 'scale(1)';
+
+  fw.innerHTML = `
+  <div style="width:800px;padding:48px;text-align:center;font-family:sans-serif;">
+    <div style="font-size:40px;margin-bottom:20px">🎬</div>
+    <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:10px">Remotion Studio</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.4);line-height:1.8;margin-bottom:28px">
+      El video se renderiza en Remotion Studio.<br>Asegúrate de tener el servidor corriendo.
+    </div>
+    <a href="http://localhost:3000" target="_blank"
+      style="display:inline-block;background:#d2e823;color:#151a28;padding:12px 28px;border-radius:48px;font-weight:800;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;margin-bottom:28px">
+      Abrir Remotion Studio ↗
+    </a>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:18px;text-align:left;font-family:monospace;font-size:11px;line-height:2.2;color:rgba(255,255,255,0.45)">
+      <span style="color:#6ee7b7">cd</span> brain1/entregables/videos/coverstyl-reel<br>
+      <span style="color:#6ee7b7">npx</span> remotion studio<br>
+      <br>
+      <span style="color:rgba(255,255,255,0.2)"># Exportar MP4:</span><br>
+      <span style="color:#6ee7b7">npx</span> remotion render CoverStylReel out/reel.mp4
+    </div>
+  </div>`;
+}
+
+// ── Zoom ──────────────────────────────────────────────────────────
+function dz(d) { zoom = Math.max(0.15, Math.min(2, zoom + d)); applyZ(); }
+function fit() {
+  const c = document.getElementById('canvas');
+  const fw = document.getElementById('fw');
+  const iw = 1080, ih = curType === 'carousel' ? 600 : 1080;
+  zoom = Math.min((c.clientWidth - 64) / iw, (c.clientHeight - 64) / ih, 1);
+  zoom = Math.round(zoom * 100) / 100;
+  applyZ();
+}
+function applyZ() {
+  document.getElementById('fw').style.transform = `scale(${zoom})`;
+  document.getElementById('zlabel').textContent = Math.round(zoom*100)+'%';
+}
+
+// ── Download frame as image ───────────────────────────────────────
+function downloadFrame() {
+  const iframe = document.getElementById('main-frame');
+  if (!iframe) return;
+  try {
+    html2canvas(iframe.contentDocument.body, {
+      width: 1080,
+      height: 1080,
+      scale: 1,
+      useCORS: true,
+      backgroundColor: '#0d0f18',
+    }).then(canvas => {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = (curFile || 'entregable').split('/').pop().replace('.html','.png');
+      a.click();
+    });
+  } catch(e) {
+    alert('Para descargar como imagen abre el entregable directamente y usa Cmd+Shift+4 en Mac.');
+  }
+}
+
+function openBrowser() { if (curFile) window.open(curFile, '_blank'); }
+
+// ── Notes ─────────────────────────────────────────────────────────
+function addNote() {
+  const type = document.getElementById('fb-type').value;
+  const target = document.getElementById('fb-target').value;
+  const text = document.getElementById('fb-text').value.trim();
+  if (!text) return;
+  const now = new Date();
+  const ts = now.toLocaleDateString('es-MX',{day:'2-digit',month:'short'})+' '+now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  notes.push({ id: Date.now(), type, target, text, ts });
+  localStorage.setItem('ag-notes', JSON.stringify(notes));
+  document.getElementById('fb-text').value = '';
+  renderNotes();
+  const btn = document.querySelector('.add-btn');
+  btn.textContent = '✓ Guardado';
+  setTimeout(() => btn.textContent = 'Guardar nota →', 1200);
+}
+
+function deleteNote(id) {
+  notes = notes.filter(n => n.id !== id);
+  localStorage.setItem('ag-notes', JSON.stringify(notes));
+  renderNotes();
+}
+
+function renderNotes() {
+  const list = document.getElementById('notes-list');
+  if (!notes.length) {
+    list.innerHTML = `<div class="empty-state">Sin notas todavía.<br>Escribe aquí si algo no se ve bien<br>o quieres cambiar algo.</div>`;
+    return;
+  }
+  list.innerHTML = notes.slice().reverse().map(n => `
+    <div class="note-card">
+      <div class="nc-type ${n.type}">${
+        n.type==='change'?'✏️ Cambio':n.type==='ok'?'✅ Aprobado':'❓ Pregunta'
+      } · ${n.target}</div>
+      <div class="nc-text">${n.text}</div>
+      <div class="nc-ts">
+        <span>${n.ts}</span>
+        <span class="nc-del" onclick="deleteNote(${n.id})">✕</span>
+      </div>
+    </div>`).join('');
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────
+function switchTab(t) {
+  document.getElementById('rtab-notes').classList.toggle('active', t==='notes');
+  document.getElementById('rtab-pexels').classList.toggle('active', t==='pexels');
+  document.getElementById('tab-notes').style.display = t==='notes'?'flex':'none';
+  document.getElementById('tab-pexels').style.display = t==='pexels'?'flex':'none';
+}
+
+// ── Pexels ────────────────────────────────────────────────────────
+function setPxMode(m) {
+  pxMode = m;
+  document.getElementById('pxt-photo').classList.toggle('active', m==='photo');
+  document.getElementById('pxt-video').classList.toggle('active', m==='video');
+}
+
+async function pxSearch() {
+  const q = document.getElementById('px-q').value.trim();
+  if (!q) return;
+  const res = document.getElementById('px-results');
+  res.innerHTML = '<div class="px-loading">Buscando...</div>';
+
+  const url = pxMode === 'photo'
+    ? `https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&per_page=12&orientation=portrait`
+    : `https://api.pexels.com/videos/search?query=${encodeURIComponent(q)}&per_page=8&orientation=portrait`;
+
+  try {
+    const r = await fetch(url, { headers: { Authorization: PEXELS_KEY } });
+    const data = await r.json();
+
+    if (pxMode === 'photo') {
+      const items = data.photos || [];
+      if (!items.length) { res.innerHTML = '<div class="px-empty">Sin resultados.</div>'; return; }
+      res.innerHTML = items.map(p => `
+        <div class="px-card">
+          <img class="px-thumb" src="${p.src.small}" alt="${p.alt||''}" loading="lazy" />
+          <div class="px-card-info">
+            <div class="px-card-name">${p.photographer}</div>
+            <div class="px-card-actions">
+              <button class="px-dl-btn photo" onclick="dlPhoto('${p.src.original}','${p.id}')">⬇ Foto</button>
+            </div>
+          </div>
+        </div>`).join('');
+    } else {
+      const items = data.videos || [];
+      if (!items.length) { res.innerHTML = '<div class="px-empty">Sin resultados de video.</div>'; return; }
+      res.innerHTML = items.map(v => {
+        const hdFile = (v.video_files||[]).find(f => f.quality==='hd') || v.video_files?.[0];
+        const thumb = v.image;
+        return `
+        <div class="px-card">
+          <img class="px-thumb" src="${thumb}" loading="lazy" />
+          <div class="px-card-info">
+            <div class="px-card-name">${v.user?.name||'Pexels'} · ${v.duration}s</div>
+            <div class="px-card-actions">
+              <button class="px-dl-btn video" onclick="dlVideo('${hdFile?.link||''}','${v.id}')">⬇ Video</button>
+            </div>
+          </div>
+        </div>`;}).join('');
+    }
+  } catch(e) {
+    res.innerHTML = '<div class="px-empty">Error al buscar. Revisa tu conexión.</div>';
+  }
+}
+
+async function dlPhoto(url, id) {
+  // Download via proxy approach — open in new tab (browser will download)
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pexels-photo-${id}.jpg`;
+  a.target = '_blank';
+  a.click();
+}
+
+async function dlVideo(url, id) {
+  if (!url) { alert('No se encontró archivo de video.'); return; }
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pexels-video-${id}.mp4`;
+  a.target = '_blank';
+  a.click();
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+switchTab('notes');
+renderNotes();
+window.addEventListener('resize', () => { if (curFile) fit(); });
+</script>
+</body>
+</html>

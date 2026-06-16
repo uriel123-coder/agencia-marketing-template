@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Premium Slide Lower Third</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+
+  .lower-third {
+    position: fixed;
+    bottom: 120px;
+    left: 60px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .accent-line-wrap {
+    overflow: hidden;
+    height: 4px;
+    margin-bottom: 14px;
+    width: 420px;
+  }
+
+  .accent-line {
+    width: 420px;
+    height: 4px;
+    background: #d2e823;
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .title-wrap {
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .title {
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 60px;
+    font-weight: 900;
+    color: #ffffff;
+    white-space: nowrap;
+    transform: translateX(-120%);
+    display: block;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.5);
+  }
+
+  .subtitle-wrap {
+    overflow: hidden;
+  }
+
+  .subtitle {
+    font-family: Arial, sans-serif;
+    font-size: 35px;
+    font-weight: 400;
+    color: #cccccc;
+    white-space: nowrap;
+    transform: translateX(-110%);
+    display: block;
+  }
+
+  .bg-panel {
+    position: absolute;
+    top: -14px; left: -18px;
+    right: -18px; bottom: -14px;
+    background: rgba(13, 17, 23, 0.55);
+    border-radius: 4px;
+    z-index: -1;
+    backdrop-filter: blur(4px);
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="lower-third" id="lt">
+  <div class="bg-panel"></div>
+  <div class="accent-line-wrap">
+    <div class="accent-line" id="line"></div>
+  </div>
+  <div class="title-wrap">
+    <span class="title" id="title">DIRECTED DECO</span>
+  </div>
+  <div class="subtitle-wrap">
+    <span class="subtitle" id="subtitle">Distribuidor Oficial Cover Styl' en México</span>
+  </div>
+</div>
+
+<script>
+  const tl = gsap.timeline({ delay: 0.3 });
+
+  tl.to('#line', {
+    scaleX: 1,
+    duration: 0.4,
+    ease: 'power2.out'
+  })
+  .to('#title', {
+    x: 0,
+    duration: 0.45,
+    ease: 'power3.out'
+  }, '-=0.1')
+  .to('#subtitle', {
+    x: 0,
+    duration: 0.4,
+    ease: 'power3.out'
+  }, '-=0.2');
+</script>
+</body>
+</html>

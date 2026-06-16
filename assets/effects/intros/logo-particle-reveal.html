@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Logo Particle Reveal — Intro</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0d1117; }
+
+  .scene {
+    width: 1080px;
+    height: 1920px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  #logo-text {
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 300px;
+    font-weight: 900;
+    color: #d2e823;
+    position: absolute;
+    opacity: 0;
+    z-index: 2;
+    letter-spacing: -10px;
+  }
+
+  .particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    z-index: 1;
+    opacity: 0;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="scene" id="scene">
+  <div id="logo-text">DD</div>
+</div>
+
+<script>
+  const colors = ['#d2e823', '#ffffff'];
+
+  const cols = 15;
+  const rows = 10;
+  const startX = 1080 / 2 - (cols * 40) / 2;
+  const startY = 1920 / 2 - (rows * 40) / 2;
+
+  const particles = [];
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const el = document.createElement('div');
+      el.className = 'particle';
+      el.style.background = colors[(r + c) % 2 === 0 ? 0 : 1];
+
+      const gridX = startX + c * 40;
+      const gridY = startY + r * 40;
+
+      el.style.left = gridX + 'px';
+      el.style.top  = gridY + 'px';
+
+      document.getElementById('scene').appendChild(el);
+      particles.push({ el, gridX, gridY });
+    }
+  }
+
+  const cx = 1080 / 2;
+  const cy = 1920 / 2;
+
+  const tl = gsap.timeline({ delay: 0.3 });
+
+  particles.forEach((p, i) => {
+    const stagger = i * 0.005;
+    tl.to(p.el, {
+      opacity: 1,
+      duration: 0.2,
+      delay: stagger
+    }, 0);
+  });
+
+  tl.to(particles.map(p => p.el), {
+    x: (i) => cx - particles[i].gridX - 5,
+    y: (i) => cy - particles[i].gridY - 5,
+    opacity: 0,
+    duration: 1.5,
+    ease: 'power3.in',
+    stagger: 0.004
+  }, 0.8);
+
+  tl.to('#logo-text', {
+    opacity: 1,
+    scale: 1,
+    duration: 0.5,
+    ease: 'power2.out'
+  }, '-=0.3');
+</script>
+</body>
+</html>

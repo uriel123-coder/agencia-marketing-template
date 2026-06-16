@@ -1,0 +1,30 @@
+# Secrets — NUNCA subir a git
+.env
+*.env.local
+
+# Skills globales (instalables con npx skills add)
+.agents/
+.claude/skills/
+
+# Node
+node_modules/
+.npm/
+
+# Archivos de render (pesados)
+brain1/entregables/videos/*/out/
+brain1/entregables/videos/*/.next/
+*.mp4
+*.mov
+*.wav
+*.mp3
+
+# Temporales y OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Archivos pesados de contexto (ZIPs/PDFs fuente)
+context/*.zip
+context/*.pdf
+context/*_extracted/

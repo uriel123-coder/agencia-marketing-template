@@ -1,0 +1,169 @@
+<!-- Effect: diagonal-swipe | Duration: 0.6s | Energy: High | Best for: Before/after reveals, scene changes, brand transitions -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagonal Swipe</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    background: #151a28;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Left dark panel — expands from left */
+  #panel-left {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: #151a28;
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 80px;
+  }
+  #panel-left-text {
+    font-family: Arial Black, sans-serif;
+    font-size: 100px;
+    font-weight: 900;
+    color: #d2e823;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    opacity: 0;
+  }
+
+  /* Right lime panel — expands from right */
+  #panel-right {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: #d2e823;
+    clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 80px;
+  }
+  #panel-right-text {
+    font-family: Arial Black, sans-serif;
+    font-size: 100px;
+    font-weight: 900;
+    color: #151a28;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    opacity: 0;
+    text-align: right;
+  }
+
+  /* Starting scene */
+  #start-scene {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, #1a2238, #151a28, #1e2840);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+  #start-scene-text {
+    font-family: Arial Black, sans-serif;
+    font-size: 80px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.08);
+    letter-spacing: -2px;
+    text-align: center;
+  }
+
+  #replay-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d2e823;
+    color: #151a28;
+    border: none;
+    padding: 18px 48px;
+    font-size: 22px;
+    font-family: Arial Black, sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    z-index: 300;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+<div id="start-scene">
+  <div id="start-scene-text">ANTES</div>
+</div>
+<div id="panel-right">
+  <div id="panel-right-text">DESPUÉS</div>
+</div>
+<div id="panel-left">
+  <div id="panel-left-text">ANTES</div>
+</div>
+<button id="replay-btn" onclick="playEffect()">▶ REPLAY</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  // Diagonal split using clip-path polygon
+  // Diagonal goes from top-right to bottom-left
+  // Left dark panel: polygon(0 0, X% 0, X%+skew 100%, 0 100%)
+  // Right lime panel: polygon(X% 0, 100% 0, 100% 100%, X%+skew 100%)
+
+  function playEffect() {
+    var tl = gsap.timeline();
+
+    // Reset
+    gsap.set("#panel-left", { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)" });
+    gsap.set("#panel-right", { clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" });
+    gsap.set("#panel-left-text", { opacity: 0 });
+    gsap.set("#panel-right-text", { opacity: 0 });
+
+    // Phase 1: Both panels expand toward center diagonal simultaneously
+    // Left panel expands: clip-path grows rightward with diagonal
+    tl.to("#panel-right", {
+      clipPath: "polygon(55% 0, 100% 0, 100% 100%, 45% 100%)",
+      duration: 0.3,
+      ease: "power3.in"
+    }, 0)
+    .to("#panel-left", {
+      clipPath: "polygon(0 0, 55% 0, 45% 100%, 0 100%)",
+      duration: 0.3,
+      ease: "power3.in"
+    }, 0)
+
+    // Phase 2: Full cover — panels meet and fill screen
+    .to("#panel-right", {
+      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+      duration: 0.3,
+      ease: "power3.out"
+    }, 0.3)
+    .to("#panel-left", {
+      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+      duration: 0.3,
+      ease: "power3.out"
+    }, 0.3)
+
+    // Show text labels
+    .to("#panel-right-text", { opacity: 1, duration: 0.15 }, 0.45)
+    .to("#panel-left-text", { opacity: 1, duration: 0.15 }, 0.5);
+  }
+
+  window.addEventListener("load", function() {
+    setTimeout(playEffect, 400);
+  });
+</script>
+</body>
+</html>

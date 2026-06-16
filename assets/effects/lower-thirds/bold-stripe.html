@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Bold Stripe Lower Third</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+
+  .stripe-wrap {
+    position: fixed;
+    bottom: 140px;
+    left: 0;
+    width: 1080px;
+    height: 90px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .stripe {
+    width: 1080px;
+    height: 90px;
+    background: #d2e823;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(100%);
+  }
+
+  .stripe-text {
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 50px;
+    font-weight: 900;
+    color: #000000;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="stripe-wrap">
+  <div class="stripe" id="stripe">
+    <span class="stripe-text">TRANSFORMACIÓN EN 1 DÍA</span>
+  </div>
+</div>
+
+<script>
+  gsap.to('#stripe', {
+    y: 0,
+    duration: 0.55,
+    ease: 'power3.out',
+    delay: 0.4
+  });
+</script>
+</body>
+</html>

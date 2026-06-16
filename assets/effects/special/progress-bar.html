@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Progress Bar</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: #151a28;
+    font-family: 'Arial Black', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scene {
+    width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Top context */
+  .context-label {
+    font-size: 28px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* Main headline */
+  .headline {
+    font-size: 50px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 50px;
+  }
+
+  .headline .accent {
+    color: #d2e823;
+  }
+
+  /* Bar group */
+  .bar-group {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  /* Bar label row */
+  .bar-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+
+  .bar-label {
+    font-size: 50px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .bar-percent {
+    font-size: 64px;
+    font-weight: 900;
+    color: #d2e823;
+    letter-spacing: -2px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 30px rgba(210,232,35,0.4);
+  }
+
+  .bar-percent .pct-sign {
+    font-size: 40px;
+  }
+
+  /* The bar track */
+  .bar-track {
+    width: 800px;
+    height: 40px;
+    background: #333344;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  /* The fill */
+  .bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #a8c000 0%, #d2e823 60%, #e8ff40 100%);
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 4px 0 20px rgba(210,232,35,0.5);
+    transition: none;
+  }
+
+  /* Shine on fill */
+  .bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%);
+    border-radius: 20px 20px 0 0;
+  }
+
+  /* Fill end glow dot */
+  .fill-end {
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(210,232,35,0.6);
+  }
+
+  /* Stars */
+  .stars-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    opacity: 0;
+    margin-left: 4px;
+  }
+
+  .star {
+    font-size: 48px;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(210,232,35,0.5));
+  }
+
+  /* Divider */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 50px 0;
+  }
+
+  /* Social proof section */
+  .proof-section {
+    width: 100%;
+  }
+
+  .proof-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 36px;
+    opacity: 0;
+  }
+
+  .proof-check {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #d2e823;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .proof-check-inner {
+    width: 14px;
+    height: 8px;
+    border-left: 3px solid #151a28;
+    border-bottom: 3px solid #151a28;
+    transform: rotate(-45deg) translate(1px, -1px);
+  }
+
+  .proof-text {
+    font-size: 32px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.3;
+  }
+
+  .proof-text strong {
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  /* Background decoration */
+  .bg-deco {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 20%, rgba(210,232,35,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 80%, rgba(210,232,35,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-lines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 89px,
+      rgba(255,255,255,0.015) 90px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-deco"></div>
+<div class="bg-lines"></div>
+
+<div class="scene">
+  <div class="context-label">Resultados verificados</div>
+
+  <div class="headline">
+    Clientes que<br>
+    <span class="accent">confían en nosotros</span>
+  </div>
+
+  <!-- BAR GROUP -->
+  <div class="bar-group">
+    <div class="bar-label-row">
+      <div class="bar-label">Clientes Satisfechos</div>
+      <div class="bar-percent" id="pctDisplay">0<span class="pct-sign">%</span></div>
+    </div>
+
+    <div class="bar-track">
+      <div class="bar-fill" id="barFill">
+        <div class="fill-end" id="fillEnd"></div>
+      </div>
+    </div>
+
+    <!-- Stars -->
+    <div class="stars-row" id="starsRow">
+      <div class="star">★</div>
+      <div class="star">★</div>
+      <div class="star">★</div>
+      <div class="star">★</div>
+      <div class="star">★</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Proof rows -->
+  <div class="proof-section">
+    <div class="proof-row" id="proof1">
+      <div class="proof-check"><div class="proof-check-inner"></div></div>
+      <div class="proof-text"><strong>+200 empresas</strong> en Ciudad de México han crecido con nosotros</div>
+    </div>
+    <div class="proof-row" id="proof2">
+      <div class="proof-check"><div class="proof-check-inner"></div></div>
+      <div class="proof-text">Promedio de <strong>3.4x ROI</strong> en campañas de marketing digital</div>
+    </div>
+    <div class="proof-row" id="proof3">
+      <div class="proof-check"><div class="proof-check-inner"></div></div>
+      <div class="proof-text">Respuesta garantizada en <strong>menos de 24 horas</strong></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  const TARGET = 95;
+  let current = { val: 0 };
+
+  const master = gsap.timeline({ repeat: -1, repeatDelay: 2 });
+
+  // Animate bar fill and percentage counter
+  master.to(current, {
+    val: TARGET,
+    duration: 2.0,
+    ease: "power2.out",
+    onUpdate: function() {
+      const v = Math.round(current.val);
+      document.getElementById("pctDisplay").innerHTML = v + '<span class="pct-sign">%</span>';
+      document.getElementById("barFill").style.width = current.val + "%";
+    }
+  }, 0.3);
+
+  // Stars appear after fill completes
+  master.to("#starsRow", {
+    opacity: 1,
+    duration: 0.4,
+    ease: "power2.out"
+  }, 2.0);
+
+  // Stars pop one by one
+  const stars = document.querySelectorAll(".star");
+  stars.forEach((star, i) => {
+    gsap.set(star, { scale: 0, opacity: 0 });
+    master.to(star, {
+      scale: 1,
+      opacity: 1,
+      duration: 0.25,
+      ease: "back.out(2)"
+    }, 2.1 + i * 0.1);
+  });
+
+  // Proof rows stagger in
+  master.to("#proof1", { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 2.6);
+  master.to("#proof2", { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 2.9);
+  master.to("#proof3", { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 3.2);
+
+  // Hold
+  master.to({}, { duration: 2.5 }, 3.8);
+
+  // Reset
+  master.to(["#starsRow", "#proof1", "#proof2", "#proof3"], {
+    opacity: 0, duration: 0.3
+  }, 6.3);
+
+  master.call(function() {
+    current.val = 0;
+    document.getElementById("pctDisplay").innerHTML = '0<span class="pct-sign">%</span>';
+    document.getElementById("barFill").style.width = "0%";
+    stars.forEach(s => gsap.set(s, { scale: 0, opacity: 0 }));
+  }, null, 6.6);
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!-- Effect: zoom-punch | Duration: 0.5s | Energy: High | Best for: Hard cuts, impact moments, product reveals -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoom Punch</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    background: #151a28;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #punch-target {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #151a28 0%, #1e2740 50%, #151a28 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0; left: 0;
+  }
+  #punch-inner {
+    width: 800px;
+    height: 800px;
+    background: #d2e823;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #punch-inner span {
+    font-family: Arial Black, sans-serif;
+    font-size: 120px;
+    font-weight: 900;
+    color: #151a28;
+    letter-spacing: -4px;
+  }
+  #flash-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+  #replay-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d2e823;
+    color: #151a28;
+    border: none;
+    padding: 18px 48px;
+    font-size: 22px;
+    font-family: Arial Black, sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    z-index: 100;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+<div id="punch-target">
+  <div id="punch-inner">
+    <span>BOOM</span>
+  </div>
+</div>
+<div id="flash-overlay"></div>
+<button id="replay-btn" onclick="playEffect()">▶ REPLAY</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  function playEffect() {
+    var tl = gsap.timeline();
+    // Reset
+    gsap.set("#punch-target", { scale: 1 });
+    gsap.set("#flash-overlay", { opacity: 0 });
+
+    // Zoom punch: scale from 1 to 1.4 power4.in then snap back
+    tl.to("#punch-target", {
+      scale: 1.4,
+      duration: 0.35,
+      ease: "power4.in"
+    }, 0)
+    .to("#flash-overlay", {
+      opacity: 0.9,
+      duration: 0.08,
+      ease: "power4.in"
+    }, 0.27)
+    .to("#punch-target", {
+      scale: 1,
+      duration: 0.15,
+      ease: "power4.out"
+    }, 0.35)
+    .to("#flash-overlay", {
+      opacity: 0,
+      duration: 0.15,
+      ease: "power2.out"
+    }, 0.35);
+  }
+
+  // Auto-play on load
+  window.addEventListener("load", function() {
+    setTimeout(playEffect, 400);
+  });
+</script>
+</body>
+</html>

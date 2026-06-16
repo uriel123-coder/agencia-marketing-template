@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Minimal Line Lower Third</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+
+  .lower-third {
+    position: fixed;
+    bottom: 130px;
+    left: 60px;
+    pointer-events: none;
+    z-index: 10;
+    display: inline-block;
+  }
+
+  .title {
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 55px;
+    font-weight: 900;
+    color: #ffffff;
+    white-space: nowrap;
+    display: block;
+    opacity: 0;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+  }
+
+  .underline-wrap {
+    overflow: hidden;
+    height: 4px;
+    margin-top: 10px;
+  }
+
+  .underline {
+    height: 4px;
+    background: #d2e823;
+    width: 0;
+    display: block;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="lower-third" id="lt">
+  <span class="title" id="title">DIRECTED DECO</span>
+  <div class="underline-wrap">
+    <span class="underline" id="underline"></span>
+  </div>
+</div>
+
+<script>
+  const tl = gsap.timeline({ delay: 0.4 });
+
+  tl.to('#title', {
+    opacity: 1,
+    duration: 0.4,
+    ease: 'power2.out',
+    onComplete: function() {
+      const titleEl = document.getElementById('title');
+      const textWidth = titleEl.offsetWidth;
+      gsap.to('#underline', {
+        width: textWidth,
+        duration: 0.45,
+        ease: 'power3.out'
+      });
+    }
+  });
+</script>
+</body>
+</html>

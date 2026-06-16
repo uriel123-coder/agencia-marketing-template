@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Confetti Burst</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: #151a28;
+    font-family: 'Arial Black', Arial, sans-serif;
+  }
+
+  .scene {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+    opacity: 0;
+  }
+
+  .rect {
+    width: 8px;
+    height: 20px;
+    border-radius: 2px;
+  }
+
+  .circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  /* Center burst label */
+  .center-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .center-label .icon {
+    font-size: 140px;
+    line-height: 1;
+    filter: drop-shadow(0 0 30px rgba(210,232,35,0.6));
+  }
+
+  .center-label .text {
+    font-size: 56px;
+    font-weight: 900;
+    color: #d2e823;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px rgba(210,232,35,0.5);
+    margin-top: 16px;
+  }
+
+  .center-label .sub {
+    font-size: 28px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* Background radial glow */
+  .bg-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(210,232,35,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Deco ring */
+  .deco-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(210,232,35,0.1);
+    pointer-events: none;
+  }
+
+  /* Top banner */
+  .top-banner {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 8px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+  }
+
+  /* Bottom banner */
+  .bottom-banner {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d2e823;
+    color: #151a28;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    padding: 16px 60px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+  }
+</style>
+</head>
+<body>
+<div class="scene" id="scene">
+  <div class="bg-glow"></div>
+
+  <!-- Deco rings -->
+  <div class="deco-ring" style="width:200px;height:200px;"></div>
+  <div class="deco-ring" style="width:400px;height:400px;"></div>
+  <div class="deco-ring" style="width:600px;height:600px;opacity:0.6;"></div>
+
+  <div class="top-banner">¡ CELEBRACIÓN !</div>
+
+  <div class="center-label" id="centerLabel">
+    <div class="icon">🏆</div>
+    <div class="text">¡FELICIDADES!</div>
+    <div class="sub">lo logramos</div>
+  </div>
+
+  <div class="bottom-banner" id="bottomBanner">ÚNETE AL EQUIPO</div>
+
+  <!-- 100 confetti pieces injected by JS -->
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  const colors = ["#d2e823", "#151a28", "#ffffff", "#B89650"];
+  const scene = document.getElementById("scene");
+  const pieces = [];
+
+  // Create 100 pieces deterministically
+  for (let i = 0; i < 100; i++) {
+    const el = document.createElement("div");
+    const isCircle = i % 4 === 3; // every 4th is circle
+    el.classList.add("confetti-piece", isCircle ? "circle" : "rect");
+
+    const colorIdx = i % colors.length;
+    el.style.background = colors[colorIdx];
+
+    // Border on dark pieces
+    if (colorIdx === 1) {
+      el.style.border = "1px solid rgba(210,232,35,0.3)";
+    }
+
+    scene.appendChild(el);
+    pieces.push(el);
+  }
+
+  function buildTimeline() {
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.5 });
+
+    // All start at center (offset from center 540, 960)
+    gsap.set(pieces, {
+      x: 0,
+      y: 0,
+      opacity: 0,
+      rotation: 0,
+      scale: 0
+    });
+
+    // Center label — pop in
+    tl.fromTo("#centerLabel", { scale: 0.5, opacity: 0 }, {
+      scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)"
+    }, 0.1);
+
+    // Each piece bursts out
+    pieces.forEach((el, i) => {
+      // Odd go left arc, even go right arc
+      const side = i % 2 === 1 ? -1 : 1;
+
+      // X spread: deterministic based on index
+      // Use index to distribute spread angles (0-180 left, 0-180 right)
+      const angle = (i % 50) * (180 / 50); // 0 to 176 degrees per side
+      const rad = (angle * Math.PI) / 180;
+
+      // Speed tier based on index % 5
+      const speedTier = i % 5; // 0,1,2,3,4
+      const dist = 200 + speedTier * 90; // 200 to 560px radius
+
+      const targetX = side * Math.cos(rad) * dist;
+      const targetY = -Math.sin(rad) * dist + (speedTier * 40); // slight gravity
+
+      // Rotation based on index
+      const rot = (i * 37) % 720 - 360; // -360 to 360
+
+      // Stagger: group by batches of 10
+      const staggerDelay = Math.floor(i / 10) * 0.04;
+
+      tl.to(el, {
+        x: targetX,
+        y: targetY,
+        opacity: 1,
+        rotation: rot,
+        scale: 1,
+        duration: 0.6,
+        ease: "power3.out",
+      }, 0.3 + staggerDelay);
+
+      // Fade out after landing
+      tl.to(el, {
+        opacity: 0,
+        y: targetY + 200,
+        duration: 0.8,
+        ease: "power2.in"
+      }, 1.4 + staggerDelay * 0.5);
+    });
+
+    // Bottom banner
+    tl.to("#bottomBanner", {
+      opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.5)"
+    }, 2.0);
+
+    // Hold
+    tl.to({}, { duration: 1.5 }, 2.5);
+
+    // Reset
+    tl.to(["#centerLabel", "#bottomBanner"], {
+      opacity: 0, duration: 0.3
+    }, 4.0);
+
+    return tl;
+  }
+
+  buildTimeline();
+</script>
+</body>
+</html>

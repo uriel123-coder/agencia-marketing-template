@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Attention Pulse</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: #151a28;
+    font-family: 'Arial Black', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* Pulse system container */
+  .pulse-system {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Concentric rings */
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid #d2e823;
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  /* Center circle */
+  .center-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #d2e823;
+    z-index: 10;
+    box-shadow:
+      0 0 20px rgba(210, 232, 35, 0.6),
+      0 0 60px rgba(210, 232, 35, 0.3),
+      0 0 100px rgba(210, 232, 35, 0.1);
+  }
+
+  /* Inner glow dot */
+  .center-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+  }
+
+  /* CTA text below */
+  .cta-wrap {
+    margin-top: 60px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .cta-text {
+    font-size: 52px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+  }
+
+  .cta-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .arrow-chevron {
+    width: 24px;
+    height: 24px;
+    border-right: 4px solid #d2e823;
+    border-bottom: 4px solid #d2e823;
+    transform: rotate(45deg);
+    margin: -8px;
+  }
+
+  /* Top context label */
+  .top-context {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+
+  .top-context .line1 {
+    font-size: 36px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+  }
+
+  /* Supporting text above pulse */
+  .above-pulse {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .above-pulse .headline {
+    font-size: 52px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .above-pulse .sub {
+    font-size: 28px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* Bottom supporting content */
+  .bottom-content {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 900px;
+  }
+
+  .bottom-content .tagline {
+    font-size: 32px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 2px;
+    line-height: 1.4;
+  }
+
+  .bottom-content .handle {
+    font-size: 36px;
+    font-weight: 900;
+    color: #d2e823;
+    margin-top: 16px;
+    letter-spacing: 2px;
+  }
+
+  /* Subtle background pattern */
+  .bg-dots {
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(210,232,35,0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-dots"></div>
+
+<div class="top-context">
+  <div class="line1">Atención</div>
+</div>
+
+<div class="scene" style="position:relative;z-index:1;">
+
+  <div class="above-pulse">
+    <div class="headline">¿Listo para<br>el siguiente nivel?</div>
+    <div class="sub">No te lo pierdas</div>
+  </div>
+
+  <div class="pulse-system">
+    <!-- 3 concentric rings -->
+    <div class="ring" id="ring1"></div>
+    <div class="ring" id="ring2"></div>
+    <div class="ring" id="ring3"></div>
+
+    <!-- Center -->
+    <div class="center-dot" id="centerDot"></div>
+  </div>
+
+  <div class="cta-wrap">
+    <div class="cta-text">VER MÁS</div>
+    <div class="cta-arrow">
+      <div class="arrow-chevron"></div>
+      <div class="arrow-chevron" style="margin-left:14px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-content">
+  <div class="tagline">Haz clic y descubre<br>lo que tenemos para ti</div>
+  <div class="handle">@directed.mx</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  // Center dot subtle breathing
+  gsap.to("#centerDot", {
+    scale: 1.08,
+    duration: 1.0,
+    ease: "power1.inOut",
+    yoyo: true,
+    repeat: -1
+  });
+
+  // Ring animation function — each ring expands from 80px to 250px and fades
+  function animateRing(ringId, delay) {
+    const ring = document.getElementById(ringId);
+    gsap.set(ring, { width: 80, height: 80, opacity: 0.9 });
+
+    gsap.to(ring, {
+      width: 250,
+      height: 250,
+      opacity: 0,
+      duration: 2.0,
+      ease: "power1.out",
+      delay: delay,
+      repeat: -1,
+      repeatDelay: 1.0,
+      onRepeat: function() {
+        gsap.set(ring, { width: 80, height: 80, opacity: 0.9 });
+      }
+    });
+  }
+
+  // Staggered: ring1 at 0s, ring2 at 0.5s, ring3 at 1.0s
+  animateRing("ring1", 0);
+  animateRing("ring2", 0.5);
+  animateRing("ring3", 1.0);
+
+  // CTA arrow bounce
+  gsap.to(".cta-arrow", {
+    y: 10,
+    duration: 0.7,
+    ease: "power1.inOut",
+    yoyo: true,
+    repeat: -1
+  });
+
+  // CTA text glow pulse
+  gsap.to(".cta-text", {
+    textShadow: "0 0 30px rgba(255,255,255,0.4)",
+    duration: 1.2,
+    ease: "power1.inOut",
+    yoyo: true,
+    repeat: -1
+  });
+</script>
+</body>
+</html>

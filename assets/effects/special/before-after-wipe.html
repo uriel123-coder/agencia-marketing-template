@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Before After Wipe</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: #151a28;
+    font-family: 'Arial Black', Arial, sans-serif;
+  }
+
+  .container {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+  }
+
+  /* LEFT PANEL — ANTES */
+  .panel-before {
+    position: absolute;
+    inset: 0;
+    width: 1080px;
+    height: 1920px;
+    background: linear-gradient(160deg, #2a2a3a 0%, #1a1a28 50%, #0f0f1a 100%);
+    filter: grayscale(60%);
+  }
+
+  .panel-before-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 20, 0.45);
+  }
+
+  /* RIGHT PANEL — DESPUÉS (hidden behind clip) */
+  .panel-after {
+    position: absolute;
+    inset: 0;
+    width: 1080px;
+    height: 1920px;
+    background: linear-gradient(160deg, #1a3040 0%, #0d2535 40%, #051820 100%);
+    clip-path: inset(0 0 0 50%);
+  }
+
+  .panel-after-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 40%, rgba(0, 180, 160, 0.25) 0%, transparent 65%),
+                radial-gradient(ellipse at 60% 70%, rgba(20, 120, 100, 0.15) 0%, transparent 50%);
+  }
+
+  /* Geometric deco lines — ANTES side */
+  .deco-lines-before {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .deco-line {
+    position: absolute;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* Geometric deco — DESPUÉS side */
+  .deco-lines-after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Content blocks ANTES */
+  .content-before {
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    pointer-events: none;
+  }
+  .content-before .big-text {
+    font-size: 110px;
+    font-weight: 900;
+    letter-spacing: -4px;
+    line-height: 1;
+    color: rgba(255,255,255,0.35);
+  }
+  .content-before .sub-text {
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-top: 20px;
+  }
+
+  /* Content blocks DESPUÉS */
+  .content-after {
+    position: absolute;
+    top: 50%;
+    left: 75%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: rgba(255,255,255,0.9);
+    pointer-events: none;
+  }
+  .content-after .big-text {
+    font-size: 110px;
+    font-weight: 900;
+    letter-spacing: -4px;
+    line-height: 1;
+    color: #d2e823;
+    text-shadow: 0 0 60px rgba(210, 232, 35, 0.4);
+  }
+  .content-after .sub-text {
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-top: 20px;
+  }
+
+  /* LABEL ANTES — bottom-left */
+  .label-antes {
+    position: absolute;
+    bottom: 120px;
+    left: 80px;
+    font-size: 72px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    z-index: 10;
+  }
+  .label-antes::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 5px;
+    background: #ffffff;
+    margin-top: 8px;
+  }
+
+  /* LABEL DESPUÉS — bottom-right */
+  .label-despues {
+    position: absolute;
+    bottom: 120px;
+    right: 80px;
+    font-size: 72px;
+    font-weight: 900;
+    color: #d2e823;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    text-shadow: 0 4px 30px rgba(210, 232, 35, 0.5);
+    text-align: right;
+    z-index: 10;
+  }
+  .label-despues::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 5px;
+    background: #d2e823;
+    margin-left: auto;
+    margin-top: 8px;
+    box-shadow: 0 0 20px rgba(210, 232, 35, 0.6);
+  }
+
+  /* DIVIDING LINE */
+  .divider-line {
+    position: absolute;
+    top: 0;
+    left: 0%;
+    width: 4px;
+    height: 1920px;
+    background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(255,255,255,0.6) 5%,
+      #ffffff 20%,
+      #ffffff 80%,
+      rgba(255,255,255,0.6) 95%,
+      transparent 100%
+    );
+    transform: translateX(-50%);
+    z-index: 20;
+    box-shadow: 0 0 12px rgba(255,255,255,0.6), 0 0 30px rgba(255,255,255,0.2);
+  }
+
+  /* HANDLE CIRCLE */
+  .divider-handle {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 4px solid rgba(255,255,255,0.9);
+    z-index: 21;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(255,255,255,0.5), 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .handle-arrows {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #151a28;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -2px;
+  }
+
+  /* Top badge */
+  .top-badge {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(21, 26, 40, 0.85);
+    border: 2px solid rgba(255,255,255,0.2);
+    padding: 14px 40px;
+    border-radius: 60px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    z-index: 15;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+  }
+</style>
+</head>
+<body>
+<div class="container" id="container">
+
+  <!-- ANTES panel -->
+  <div class="panel-before" id="panelBefore">
+    <div class="panel-before-overlay"></div>
+    <!-- Deco grid lines -->
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.03) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.03) 80px);"></div>
+  </div>
+
+  <!-- DESPUÉS panel (clipped) -->
+  <div class="panel-after" id="panelAfter">
+    <div class="panel-after-glow"></div>
+    <!-- Deco grid lines teal tint -->
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,180,160,0.05) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,180,160,0.05) 80px);"></div>
+  </div>
+
+  <!-- Content ANTES -->
+  <div class="content-before">
+    <div class="big-text">ANTES</div>
+    <div class="sub-text">situación inicial</div>
+  </div>
+
+  <!-- Content DESPUÉS -->
+  <div class="content-after">
+    <div class="big-text">DESPUÉS</div>
+    <div class="sub-text">resultado final</div>
+  </div>
+
+  <!-- Labels -->
+  <div class="label-antes">ANTES</div>
+  <div class="label-despues">DESPUÉS</div>
+
+  <!-- Top badge -->
+  <div class="top-badge">TRANSFORMACIÓN</div>
+
+  <!-- Divider line -->
+  <div class="divider-line" id="dividerLine"></div>
+
+  <!-- Handle -->
+  <div class="divider-handle" id="dividerHandle">
+    <div class="handle-arrows">&#8249;&#8250;</div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  gsap.defaults({ ease: "power2.inOut" });
+
+  const tl = gsap.timeline({ repeat: -1, yoyo: true });
+
+  // Animate line from left:0% to left:50%
+  tl.to("#dividerLine", {
+    left: "50%",
+    duration: 1.5,
+    ease: "power2.inOut"
+  }, 0);
+
+  tl.to("#dividerHandle", {
+    left: "50%",
+    duration: 1.5,
+    ease: "power2.inOut"
+  }, 0);
+
+  // Animate clip-path: start fully hidden (inset 0 0 0 100%) → reveal to 50%
+  tl.fromTo("#panelAfter",
+    { clipPath: "inset(0 0 0 100%)" },
+    { clipPath: "inset(0 0 0 50%)", duration: 1.5, ease: "power2.inOut" },
+    0
+  );
+
+  // Pause at 50% for 1 second, then reverse (yoyo handles it)
+  tl.to({}, { duration: 1.0 });
+
+  // Initial state
+  gsap.set("#dividerLine", { left: "0%" });
+  gsap.set("#dividerHandle", { left: "0%" });
+  gsap.set("#panelAfter", { clipPath: "inset(0 0 0 100%)" });
+
+  // Restart cleanly
+  tl.restart();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Film Grain 16mm — Overlay</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+  canvas { display: block; position: fixed; top: 0; left: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<canvas id="grain" width="1080" height="1920"></canvas>
+<script>
+  const canvas = document.getElementById('grain');
+  const ctx = canvas.getContext('2d');
+  let frameCount = 0;
+
+  function drawGrain() {
+    ctx.clearRect(0, 0, 1080, 1920);
+    const imageData = ctx.createImageData(1080, 1920);
+    const data = imageData.data;
+
+    for (let y = 0; y < 1920; y += 3) {
+      for (let x = 0; x < 1080; x += 3) {
+        const noise = (Math.sin(x * 127.1 + y * 311.7 + frameCount * 0.1) * 128 + 128);
+        const alpha = noise > 100 && noise < 160 ? 15 : 0;
+
+        for (let dy = 0; dy < 3; dy++) {
+          for (let dx = 0; dx < 3; dx++) {
+            const idx = ((y + dy) * 1080 + (x + dx)) * 4;
+            data[idx]     = 128;
+            data[idx + 1] = 128;
+            data[idx + 2] = 128;
+            data[idx + 3] = alpha;
+          }
+        }
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    frameCount++;
+    requestAnimationFrame(drawGrain);
+  }
+
+  drawGrain();
+</script>
+</body>
+</html>

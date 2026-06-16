@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>VHS Noise — Overlay</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+
+  .scanlines {
+    position: fixed;
+    top: 0; left: 0;
+    width: 1080px; height: 1920px;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      rgba(0, 0, 0, 0.12) 1px,
+      transparent 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .displacement-line {
+    position: fixed;
+    left: 0;
+    width: 1080px;
+    height: 3px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.18) 20%,
+      rgba(180, 220, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0.18) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+    animation: vhsSweep 8s linear infinite;
+    top: -4px;
+  }
+
+  .displacement-line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    top: -2px;
+    background: rgba(100, 200, 255, 0.12);
+  }
+
+  @keyframes vhsSweep {
+    0%   { top: -4px; opacity: 0; }
+    2%   { opacity: 1; }
+    95%  { opacity: 1; }
+    100% { top: 1924px; opacity: 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="displacement-line"></div>
+</body>
+</html>

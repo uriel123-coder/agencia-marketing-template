@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Bokeh Particles — Overlay</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+
+  .bokeh {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(25px);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<script>
+  const colors = ['#d2e823', '#ffffff', '#B89650'];
+  const sizes  = [80, 110, 65, 95, 75, 120, 85, 70, 100, 90,
+                  60, 130, 80, 110, 70,  95, 85, 75, 105, 65];
+
+  const xPositions = [
+    120, 280, 540, 760, 940, 200, 450, 680, 880, 340,
+    100, 600, 820, 160, 500, 720, 980, 380, 260, 640
+  ];
+
+  const yStartPositions = [
+    1800, 1850, 1780, 1900, 1820, 1860, 1790, 1840, 1870, 1810,
+    1920, 1760, 1830, 1780, 1890, 1850, 1800, 1770, 1910, 1840
+  ];
+
+  for (let i = 0; i < 20; i++) {
+    const el = document.createElement('div');
+    el.className = 'bokeh';
+    const size = sizes[i];
+    el.style.width  = size + 'px';
+    el.style.height = size + 'px';
+    el.style.background = colors[i % colors.length];
+    el.style.left = xPositions[i] + 'px';
+    el.style.top  = yStartPositions[i] + 'px';
+    el.style.opacity = 0;
+    document.body.appendChild(el);
+
+    const duration = 6 + i * 0.3;
+    const delay    = i * 0.25;
+
+    gsap.to(el, {
+      y: -(yStartPositions[i] + size + 100),
+      opacity: 0.35,
+      duration: duration,
+      delay: delay,
+      ease: 'none',
+      repeat: -1,
+      repeatDelay: 0,
+      onRepeat: function() {
+        gsap.set(el, { opacity: 0 });
+      },
+      onStart: function() {
+        gsap.to(el, { opacity: 0.35, duration: 1 });
+      }
+    });
+  }
+</script>
+</body>
+</html>

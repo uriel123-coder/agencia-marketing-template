@@ -1,0 +1,149 @@
+<!-- Effect: glitch-cut | Duration: 0.3s | Energy: Extreme | Best for: Brand reveals, edgy transitions, cyberpunk aesthetic -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glitch Cut</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    background: #151a28;
+    overflow: hidden;
+    position: relative;
+  }
+  .glitch-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    mix-blend-mode: screen;
+  }
+  .glitch-layer span {
+    font-family: Arial Black, sans-serif;
+    font-size: 140px;
+    font-weight: 900;
+    color: white;
+    text-align: center;
+    letter-spacing: -3px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  #layer-r span { color: rgba(255, 0, 0, 0.9); }
+  #layer-g span { color: rgba(0, 255, 0, 0.9); }
+  #layer-b span { color: rgba(0, 100, 255, 0.9); }
+  #layer-base span { color: white; mix-blend-mode: normal; }
+  #layer-base { mix-blend-mode: normal; z-index: 10; }
+  #layer-r { z-index: 7; }
+  #layer-g { z-index: 8; }
+  #layer-b { z-index: 9; }
+  #scan-lines {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.15) 3px,
+      rgba(0,0,0,0.15) 4px
+    );
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+  }
+  #noise-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 15;
+    opacity: 0;
+    pointer-events: none;
+    background: #151a28;
+  }
+  #replay-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d2e823;
+    color: #151a28;
+    border: none;
+    padding: 18px 48px;
+    font-size: 22px;
+    font-family: Arial Black, sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    z-index: 200;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="glitch-layer" id="layer-r"><span>DIRECTED DECO</span></div>
+<div class="glitch-layer" id="layer-g"><span>DIRECTED DECO</span></div>
+<div class="glitch-layer" id="layer-b"><span>DIRECTED DECO</span></div>
+<div class="glitch-layer" id="layer-base"><span>DIRECTED DECO</span></div>
+<div id="scan-lines"></div>
+<div id="noise-overlay"></div>
+<button id="replay-btn" onclick="playEffect()">▶ REPLAY</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  // Deterministic glitch keyframes — 8 frames over 0.3s
+  var glitchFrames = [
+    { r: 8,  g: 0,   b: -8,  noise: 0.0 },
+    { r: -6, g: 4,   b: 10,  noise: 0.7 },
+    { r: 12, g: -8,  b: -4,  noise: 0.0 },
+    { r: -10,g: 6,   b: 8,   noise: 0.8 },
+    { r: 4,  g: -12, b: 6,   noise: 0.0 },
+    { r: -8, g: 10,  b: -6,  noise: 0.6 },
+    { r: 6,  g: -4,  b: -10, noise: 0.0 },
+    { r: 0,  g: 0,   b: 0,   noise: 0.0 }
+  ];
+
+  function playEffect() {
+    var tl = gsap.timeline();
+    var frameDur = 0.3 / 8; // 8 frames over 0.3s
+
+    // Reset
+    gsap.set("#layer-r", { x: 8, opacity: 1 });
+    gsap.set("#layer-g", { x: 0, opacity: 1 });
+    gsap.set("#layer-b", { x: -8, opacity: 1 });
+    gsap.set("#layer-base", { opacity: 1 });
+    gsap.set("#scan-lines", { opacity: 0 });
+    gsap.set("#noise-overlay", { opacity: 0 });
+
+    // Initial offsets
+    tl.set("#layer-r", { x: glitchFrames[0].r })
+      .set("#layer-g", { x: glitchFrames[0].g })
+      .set("#layer-b", { x: glitchFrames[0].b });
+
+    for (var i = 0; i < glitchFrames.length; i++) {
+      (function(frame, idx) {
+        tl.to("#layer-r", { x: frame.r, duration: frameDur, ease: "none" }, idx * frameDur)
+          .to("#layer-g", { x: frame.g, duration: frameDur, ease: "none" }, idx * frameDur)
+          .to("#layer-b", { x: frame.b, duration: frameDur, ease: "none" }, idx * frameDur)
+          .to("#noise-overlay", { opacity: frame.noise, duration: frameDur * 0.5, ease: "none" }, idx * frameDur)
+          .to("#noise-overlay", { opacity: 0, duration: frameDur * 0.5, ease: "none" }, idx * frameDur + frameDur * 0.5);
+      })(glitchFrames[i], i);
+    }
+
+    // Scan lines flash during glitch
+    tl.to("#scan-lines", { opacity: 1, duration: 0.05, ease: "none" }, 0)
+      .to("#scan-lines", { opacity: 0, duration: 0.05, ease: "none" }, 0.25);
+  }
+
+  window.addEventListener("load", function() {
+    setTimeout(playEffect, 400);
+  });
+</script>
+</body>
+</html>

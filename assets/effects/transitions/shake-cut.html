@@ -1,0 +1,173 @@
+<!-- Effect: shake-cut | Duration: 0.4s | Energy: High | Best for: Impact emphasis, product drops, dramatic moments, bass hits -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shake Cut</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    background: #151a28;
+    overflow: hidden;
+    position: relative;
+  }
+  #shake-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #1a2035 0%, #151a28 50%, #141820 100%);
+    will-change: transform;
+  }
+  #text-block {
+    text-align: center;
+    position: relative;
+    z-index: 5;
+  }
+  #main-label {
+    font-family: Arial Black, sans-serif;
+    font-size: 130px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: -4px;
+    line-height: 0.95;
+    display: block;
+  }
+  #sub-label {
+    font-family: Arial Black, sans-serif;
+    font-size: 130px;
+    font-weight: 900;
+    color: #d2e823;
+    letter-spacing: -4px;
+    line-height: 0.95;
+    display: block;
+  }
+  /* Decorative lines */
+  .h-line {
+    width: 500px;
+    height: 3px;
+    background: #d2e823;
+    margin: 30px auto;
+  }
+  /* Impact flash vignette */
+  #impact-flash {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+  }
+  /* Chromatic aberration overlay during shake */
+  #chroma-r {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,0,0,0.15);
+    opacity: 0;
+    mix-blend-mode: screen;
+    z-index: 15;
+    pointer-events: none;
+  }
+  #chroma-b {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,100,255,0.15);
+    opacity: 0;
+    mix-blend-mode: screen;
+    z-index: 16;
+    pointer-events: none;
+  }
+  #replay-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d2e823;
+    color: #151a28;
+    border: none;
+    padding: 18px 48px;
+    font-size: 22px;
+    font-family: Arial Black, sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    z-index: 300;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+<div id="shake-container">
+  <div id="text-block">
+    <span id="main-label">DIRECTED</span>
+    <div class="h-line"></div>
+    <span id="sub-label">DECO</span>
+  </div>
+</div>
+<div id="impact-flash"></div>
+<div id="chroma-r"></div>
+<div id="chroma-b"></div>
+<button id="replay-btn" onclick="playEffect()">▶ REPLAY</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  // Deterministic shake keyframes: translateX, translateY in rapid succession
+  // Sequence: 8px/-6px, 10px/-4px, 7px/-9px, 0px/0px (GSAP spec)
+  function playEffect() {
+    var tl = gsap.timeline();
+
+    // Reset
+    gsap.set("#shake-container", { x: 0, y: 0 });
+    gsap.set("#impact-flash", { opacity: 0 });
+    gsap.set("#chroma-r", { opacity: 0, x: 0 });
+    gsap.set("#chroma-b", { opacity: 0, x: 0 });
+
+    var frameDur = 0.04; // ~25fps per shake frame
+
+    // Initial impact flash
+    tl.to("#impact-flash", { opacity: 0.7, duration: 0.02, ease: "none" }, 0)
+      .to("#impact-flash", { opacity: 0, duration: 0.06, ease: "power2.out" }, 0.02)
+
+    // Chromatic separation during shake
+    .to("#chroma-r", { opacity: 1, x: 8, duration: 0.02, ease: "none" }, 0)
+    .to("#chroma-b", { opacity: 1, x: -8, duration: 0.02, ease: "none" }, 0)
+
+    // Shake frame 1: x:8 y:-6
+    .to("#shake-container", { x: 8, y: -6, duration: frameDur, ease: "none" }, 0.02)
+    // Shake frame 2: x:-10 y:4
+    .to("#shake-container", { x: -10, y: 4, duration: frameDur, ease: "none" }, 0.02 + frameDur)
+    // Shake frame 3: x:10 y:-4
+    .to("#shake-container", { x: 10, y: -4, duration: frameDur, ease: "none" }, 0.02 + frameDur * 2)
+    // Shake frame 4: x:-7 y:9
+    .to("#shake-container", { x: -7, y: 9, duration: frameDur, ease: "none" }, 0.02 + frameDur * 3)
+    // Shake frame 5: x:7 y:-9
+    .to("#shake-container", { x: 7, y: -9, duration: frameDur, ease: "none" }, 0.02 + frameDur * 4)
+    // Shake frame 6: x:-5 y:3
+    .to("#shake-container", { x: -5, y: 3, duration: frameDur, ease: "none" }, 0.02 + frameDur * 5)
+    // Shake frame 7: x:3 y:-2
+    .to("#shake-container", { x: 3, y: -2, duration: frameDur, ease: "none" }, 0.02 + frameDur * 6)
+    // Settle: x:0 y:0
+    .to("#shake-container", { x: 0, y: 0, duration: 0.1, ease: "elastic.out(1, 0.5)" }, 0.02 + frameDur * 7)
+
+    // Chroma fades out
+    .to("#chroma-r", { opacity: 0, x: 0, duration: 0.15, ease: "power2.out" }, 0.15)
+    .to("#chroma-b", { opacity: 0, x: 0, duration: 0.15, ease: "power2.out" }, 0.15);
+  }
+
+  window.addEventListener("load", function() {
+    setTimeout(playEffect, 400);
+  });
+</script>
+</body>
+</html>

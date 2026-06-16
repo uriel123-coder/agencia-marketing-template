@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Cinematic Bars — Overlay</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+
+  .bar-top,
+  .bar-bottom {
+    position: fixed;
+    left: 0;
+    width: 1080px;
+    height: 10.9vh;
+    background: #000000;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .bar-top    { top: 0; }
+  .bar-bottom { bottom: 0; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+  <div class="bar-top"    id="barTop"></div>
+  <div class="bar-bottom" id="barBottom"></div>
+
+<script>
+  gsap.from('#barTop', {
+    yPercent: -100,
+    duration: 0.8,
+    ease: 'power2.out',
+    delay: 0.1
+  });
+
+  gsap.from('#barBottom', {
+    yPercent: 100,
+    duration: 0.8,
+    ease: 'power2.out',
+    delay: 0.1
+  });
+</script>
+</body>
+</html>

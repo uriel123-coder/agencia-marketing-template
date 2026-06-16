@@ -1,0 +1,168 @@
+<!-- Effect: color-flash | Duration: 0.3s | Energy: Extreme | Best for: Hard cuts between scenes, brand energy burst, attention snap -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Flash</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    background: #151a28;
+    overflow: hidden;
+    position: relative;
+  }
+  /* Content underneath flash */
+  #scene-a {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a2238 0%, #151a28 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #scene-a-text {
+    font-family: Arial Black, sans-serif;
+    font-size: 110px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.07);
+    letter-spacing: -4px;
+    text-align: center;
+  }
+  /* Flash layers stacked */
+  #flash-lime {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: #d2e823;
+    opacity: 0;
+    z-index: 10;
+    pointer-events: none;
+  }
+  #flash-white {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    opacity: 0;
+    z-index: 11;
+    pointer-events: none;
+  }
+  #flash-dark {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: #151a28;
+    opacity: 0;
+    z-index: 12;
+    pointer-events: none;
+  }
+  /* After flash — scene B */
+  #scene-b {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: #d2e823;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 2;
+  }
+  #scene-b-text {
+    font-family: Arial Black, sans-serif;
+    font-size: 110px;
+    font-weight: 900;
+    color: #151a28;
+    letter-spacing: -4px;
+    text-align: center;
+  }
+  /* Flash sequence indicator */
+  #sequence-label {
+    position: absolute;
+    bottom: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: monospace;
+    font-size: 24px;
+    color: rgba(210,232,35,0.5);
+    letter-spacing: 3px;
+    z-index: 50;
+  }
+  #replay-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d2e823;
+    color: #151a28;
+    border: none;
+    padding: 18px 48px;
+    font-size: 22px;
+    font-family: Arial Black, sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    z-index: 300;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+<div id="scene-a">
+  <div id="scene-a-text">SCENE A</div>
+</div>
+<div id="scene-b">
+  <div id="scene-b-text">SCENE B</div>
+</div>
+<div id="flash-lime"></div>
+<div id="flash-white"></div>
+<div id="flash-dark"></div>
+<div id="sequence-label">LIME → WHITE → DARK → CUT</div>
+<button id="replay-btn" onclick="playEffect()">▶ REPLAY</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  // Flash sequence: #d2e823 0.06s | white 0.05s | #151a28 0.08s | scene B revealed
+  function playEffect() {
+    var tl = gsap.timeline();
+
+    // Reset all layers
+    gsap.set("#flash-lime", { opacity: 0 });
+    gsap.set("#flash-white", { opacity: 0 });
+    gsap.set("#flash-dark", { opacity: 0 });
+    gsap.set("#scene-b", { opacity: 0 });
+
+    // LIME flash: 0.06s on, then off
+    tl.to("#flash-lime", { opacity: 1, duration: 0.01, ease: "none" }, 0)
+      .to("#flash-lime", { opacity: 0, duration: 0.01, ease: "none" }, 0.06)
+
+    // WHITE flash: 0.05s
+      .to("#flash-white", { opacity: 1, duration: 0.01, ease: "none" }, 0.07)
+      .to("#flash-white", { opacity: 0, duration: 0.01, ease: "none" }, 0.12)
+
+    // DARK flash: 0.08s
+      .to("#flash-dark", { opacity: 1, duration: 0.01, ease: "none" }, 0.13)
+      .to("#flash-dark", { opacity: 0, duration: 0.01, ease: "none" }, 0.21)
+
+    // Reveal scene B
+      .to("#scene-b", { opacity: 1, duration: 0.01, ease: "none" }, 0.22)
+
+    // Extra: pulse lime on scene B for brand energy
+      .to("#flash-lime", { opacity: 0.3, duration: 0.03, ease: "none" }, 0.24)
+      .to("#flash-lime", { opacity: 0, duration: 0.06, ease: "power2.out" }, 0.27);
+  }
+
+  window.addEventListener("load", function() {
+    setTimeout(playEffect, 400);
+  });
+</script>
+</body>
+</html>

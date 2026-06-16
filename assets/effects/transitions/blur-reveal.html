@@ -1,0 +1,142 @@
+<!-- Effect: blur-reveal | Duration: 0.8s | Energy: Medium | Best for: Title reveals, premium brand moments, hero text entrances -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blur Reveal</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    background: #151a28;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #bg-radial {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 48%, rgba(30, 40, 70, 0.9) 0%, #151a28 100%);
+  }
+  /* Subtle grid texture */
+  #bg-grid {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+      linear-gradient(rgba(210,232,35,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(210,232,35,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  #text-wrapper {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 60px;
+  }
+  #main-text {
+    font-family: Arial Black, sans-serif;
+    font-size: 90px;
+    font-weight: 900;
+    color: white;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    text-transform: uppercase;
+    filter: blur(20px);
+    transform: scale(0.9);
+    will-change: filter, transform;
+  }
+  #sub-text {
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: #d2e823;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-top: 30px;
+    opacity: 0;
+    filter: blur(10px);
+  }
+  #accent-line {
+    width: 0;
+    height: 4px;
+    background: #d2e823;
+    margin: 28px auto 0;
+    opacity: 0;
+  }
+  #replay-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d2e823;
+    color: #151a28;
+    border: none;
+    padding: 18px 48px;
+    font-size: 22px;
+    font-family: Arial Black, sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    z-index: 200;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+<div id="bg-radial"></div>
+<div id="bg-grid"></div>
+<div id="text-wrapper">
+  <div id="main-text">TRANSFORMACIÓN<br>ARQUITECTÓNICA</div>
+  <div id="accent-line"></div>
+  <div id="sub-text">DIRECTED DECO</div>
+</div>
+<button id="replay-btn" onclick="playEffect()">▶ REPLAY</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  function playEffect() {
+    var tl = gsap.timeline();
+
+    // Reset
+    gsap.set("#main-text", { filter: "blur(20px)", scale: 0.9, opacity: 1 });
+    gsap.set("#sub-text", { opacity: 0, filter: "blur(10px)" });
+    gsap.set("#accent-line", { width: 0, opacity: 0 });
+
+    // Main text: blur(20px) scale(0.9) → blur(0) scale(1) over 0.8s power2.out
+    tl.to("#main-text", {
+      filter: "blur(0px)",
+      scale: 1,
+      duration: 0.8,
+      ease: "power2.out"
+    }, 0)
+
+    // Accent line expands
+    .to("#accent-line", {
+      width: 280,
+      opacity: 1,
+      duration: 0.5,
+      ease: "power3.out"
+    }, 0.5)
+
+    // Sub-text reveals
+    .to("#sub-text", {
+      opacity: 1,
+      filter: "blur(0px)",
+      duration: 0.5,
+      ease: "power2.out"
+    }, 0.65);
+  }
+
+  window.addEventListener("load", function() {
+    setTimeout(playEffect, 400);
+  });
+</script>
+</body>
+</html>

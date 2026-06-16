@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Shock Hook Frame — Intro</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0d1117; }
+
+  .frame {
+    width: 1080px;
+    height: 1920px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px;
+  }
+
+  .question-mark {
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 120px;
+    color: #d2e823;
+    opacity: 0;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .hook-text {
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .word {
+    display: inline-block;
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 90px;
+    font-weight: 900;
+    color: #ffffff;
+    opacity: 0;
+    transform: translateY(40px);
+    margin: 0 6px;
+  }
+
+  .word.accent {
+    color: #d2e823;
+  }
+
+  .word.small {
+    font-size: 70px;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="frame">
+  <div class="question-mark" id="qmark">?</div>
+  <div class="hook-text">
+    <span class="word small" id="w0">Y SI</span>
+    <span class="word small" id="w1">PUDIERAS</span>
+    <br>
+    <span class="word accent" id="w2">TRANSFORMAR</span>
+    <br>
+    <span class="word small" id="w3">TU ESPACIO EN</span>
+    <br>
+    <span class="word accent" id="w4">1 DÍA?</span>
+  </div>
+</div>
+
+<script>
+  const tl = gsap.timeline({ delay: 0.2 });
+
+  tl.to('#qmark', {
+    opacity: 1,
+    y: 0,
+    duration: 0.3,
+    ease: 'back.out(2)'
+  });
+
+  const words = ['#w0','#w1','#w2','#w3','#w4'];
+  words.forEach((id, i) => {
+    tl.to(id, {
+      opacity: 1,
+      y: 0,
+      duration: 0.35,
+      ease: 'power3.out'
+    }, `-=${i === 0 ? 0 : 0.2}`);
+  });
+
+  tl.to({}, { duration: 1.5 });
+</script>
+</body>
+</html>

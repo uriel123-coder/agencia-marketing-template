@@ -1,0 +1,160 @@
+<!-- Effect: light-leak | Duration: 1.0s | Energy: Medium | Best for: Luxury reveals, warm product transitions, lifestyle content -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Light Leak</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1920px;
+    background: #151a28;
+    overflow: hidden;
+    position: relative;
+  }
+  #scene {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #1a2035 0%, #151a28 40%, #1e2535 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #scene-text {
+    font-family: Arial Black, sans-serif;
+    font-size: 90px;
+    font-weight: 900;
+    color: white;
+    text-align: center;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    opacity: 0.15;
+  }
+  #light-leak {
+    position: absolute;
+    top: -300px;
+    left: -100%;
+    width: 1400px;
+    height: 2600px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(244, 164, 96, 0.15) 20%,
+      rgba(244, 164, 96, 0.55) 38%,
+      rgba(255, 200, 120, 0.75) 48%,
+      rgba(255, 255, 255, 0.6) 52%,
+      rgba(255, 220, 150, 0.65) 57%,
+      rgba(244, 164, 96, 0.45) 68%,
+      rgba(210, 140, 60, 0.2) 82%,
+      transparent 100%
+    );
+    transform: rotate(-15deg);
+    transform-origin: center center;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 10;
+  }
+  #secondary-leak {
+    position: absolute;
+    top: -400px;
+    left: -100%;
+    width: 900px;
+    height: 2800px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 180, 80, 0.08) 30%,
+      rgba(255, 220, 120, 0.35) 50%,
+      rgba(255, 255, 200, 0.25) 60%,
+      rgba(244, 164, 96, 0.12) 75%,
+      transparent 100%
+    );
+    transform: rotate(-15deg);
+    transform-origin: center center;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 9;
+  }
+  #vignette {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+    z-index: 5;
+    pointer-events: none;
+  }
+  #replay-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d2e823;
+    color: #151a28;
+    border: none;
+    padding: 18px 48px;
+    font-size: 22px;
+    font-family: Arial Black, sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    z-index: 200;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+<div id="scene">
+  <div id="scene-text">DIRECTED<br>DECO</div>
+</div>
+<div id="vignette"></div>
+<div id="light-leak"></div>
+<div id="secondary-leak"></div>
+<button id="replay-btn" onclick="playEffect()">▶ REPLAY</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  function playEffect() {
+    var tl = gsap.timeline();
+
+    // Reset
+    gsap.set("#light-leak", { left: "-100%", opacity: 1 });
+    gsap.set("#secondary-leak", { left: "-100%", opacity: 1 });
+    gsap.set("#scene-text", { opacity: 0.15 });
+
+    // Main leak sweeps from left:-100% to left:120%
+    tl.to("#light-leak", {
+      left: "120%",
+      duration: 1.0,
+      ease: "power1.inOut"
+    }, 0)
+
+    // Secondary leak follows slightly behind
+    .to("#secondary-leak", {
+      left: "130%",
+      duration: 1.0,
+      ease: "power1.inOut"
+    }, 0.08)
+
+    // Scene text brightens as light passes
+    .to("#scene-text", {
+      opacity: 0.7,
+      duration: 0.4,
+      ease: "power2.out"
+    }, 0.3)
+    .to("#scene-text", {
+      opacity: 0.2,
+      duration: 0.4,
+      ease: "power2.in"
+    }, 0.7);
+  }
+
+  window.addEventListener("load", function() {
+    setTimeout(playEffect, 400);
+  });
+</script>
+</body>
+</html>
