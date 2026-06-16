@@ -6,7 +6,7 @@ Template limpio para arrancar un proyecto nuevo desde cero.
 
 ```bash
 # 1. Clonar
-git clone [este-repo] nombre-cliente
+git clone https://github.com/uriel123-coder/agencia-marketing-template nombre-cliente
 cd nombre-cliente
 
 # 2. Configurar API keys
@@ -50,11 +50,39 @@ sistema/               ← Scripts TTS, check conexiones, Composio setup
 3. Lee `context/hooks-library.md` + `viral-frameworks.md` → hooks virales
 4. Crea el entregable y lo guarda en `brain1/entregables/[tipo]/`
 
-## Skills disponibles (instalar con npx skills add)
+## Skills (instalar con npx skills add)
 
 | Skill | Para qué |
 |-------|----------|
-| `mvanhorn/last30days-skill` | Tendencias reales últimos 30 días |
-| `dkyazzentwatwa/chatgpt-skills@mcp-builder` | Construir conexiones MCP |
-| `aradotso/trending-skills@agent-browser-automation` | Navegar páginas automáticamente |
-| `nexu-io/open-design@web-design-guidelines` | Auditar diseños contra estándares |
+| `mvanhorn/last30days-skill` | Tendencias reales últimos 30 días (Reddit, TikTok, X, YouTube) |
+| `dkyazzentwatwa/chatgpt-skills@mcp-builder` | Construir y conectar servidores MCP |
+| `aradotso/trending-skills@agent-browser-automation` | Claude navega páginas y prueba por ti |
+| `nexu-io/open-design@web-design-guidelines` | Audita diseños contra 100+ estándares |
+
+## Composio — Conectar Instagram, WhatsApp y más
+
+Composio conecta Claude con 250+ herramientas via MCP.
+
+### 1. Obtener API Key
+Ve a **https://app.composio.dev** → Settings → API Keys → copiar key
+
+### 2. Agregar a Claude Code
+Edita (o crea) `~/.claude/.mcp.json`:
+```json
+{
+  "mcpServers": {
+    "composio": {
+      "type": "sse",
+      "url": "https://mcp.composio.dev/composio/mcp?apiKey=TU_KEY_AQUI"
+    }
+  }
+}
+```
+Reinicia Claude Code — ya aparecen las tools de Composio.
+
+### 3. Conectar cada herramienta
+En **https://app.composio.dev → Integrations** → busca Instagram / WhatsApp / Notion → Connect → OAuth
+
+Top integraciones para agencia: Instagram · WhatsApp Business · LinkedIn · Google Sheets · HubSpot · Mailchimp · Slack · Airtable
+
+> Instrucciones completas: `sistema/COMPOSIO-SETUP.md`
