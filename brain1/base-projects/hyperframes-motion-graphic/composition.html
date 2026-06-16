@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>Motion Graphic — [NOMBRE PROYECTO]</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1920px;
+    background: #0a0a0a;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* ── Escena principal ── */
+  #scene {
+    width: 100%; height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Objeto hero (reemplazar con imagen/3D real del cliente) ── */
+  #hero-object {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 0;
+    transform: scale(0.6) rotate(-15deg);
+  }
+
+  /* Placeholder del objeto — REEMPLAZAR con imagen real del producto */
+  #hero-object .product {
+    width: 600px;
+    height: 600px;
+    background: linear-gradient(135deg, #c0a060 0%, #8b6914 50%, #e8d08a 100%);
+    border-radius: 20px;
+    box-shadow: 0 40px 120px rgba(192, 160, 96, 0.4), 0 0 0 2px rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 120px;
+    /* ↑ Reemplazar todo este div con: <img src="producto.png" style="width:600px"> */
+  }
+
+  /* ── Línea 1 — ENCIMA del objeto, entra desde arriba ── */
+  .text-line-top {
+    position: absolute;
+    top: 380px;
+    left: 0; right: 0;
+    text-align: center;
+    z-index: 20;
+    opacity: 0;
+    transform: translateY(-80px);
+  }
+  .text-line-top span {
+    font-size: 96px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -2px;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+  }
+
+  /* ── Línea 2 — DEBAJO del objeto, entra desde abajo ── */
+  .text-line-bottom {
+    position: absolute;
+    bottom: 380px;
+    left: 0; right: 0;
+    text-align: center;
+    z-index: 20;
+    opacity: 0;
+    transform: translateY(80px);
+  }
+  .text-line-bottom span {
+    font-size: 80px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+  }
+
+  /* ── Línea lateral — aparece al LADO del objeto ── */
+  .text-line-side {
+    position: absolute;
+    left: 60px;
+    top: 50%;
+    transform: translateY(-50%) translateX(-120px);
+    z-index: 20;
+    opacity: 0;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+  .text-line-side span {
+    font-size: 48px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+  }
+
+  /* ── Texto principal — sobre el objeto ── */
+  .text-main {
+    position: absolute;
+    z-index: 30;
+    text-align: center;
+    opacity: 0;
+  }
+  .text-main span {
+    font-size: 140px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -4px;
+    line-height: 0.9;
+    text-transform: uppercase;
+    mix-blend-mode: difference; /* Hace que el texto "pase" sobre el objeto */
+  }
+
+  /* ── Acento de color ── */
+  .accent { color: #d2e823 !important; } /* Cambiar por color de marca */
+
+  /* ── CTA final ── */
+  .cta-container {
+    position: absolute;
+    bottom: 160px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 40;
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  .cta-pill {
+    background: #ffffff;
+    color: #0a0a0a;
+    font-size: 48px;
+    font-weight: 800;
+    padding: 28px 80px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* ── Grain overlay ── */
+  #grain {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+  }
+</style>
+</head>
+<body>
+
+<svg id="grain" style="position:fixed;inset:0;width:100%;height:100%">
+  <filter id="gf"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  <rect width="100%" height="100%" filter="url(#gf)"/>
+</svg>
+
+<div id="scene">
+  <!-- LÍNEA SUPERIOR — entra primero -->
+  <div class="text-line-top">
+    <span>CUANDO EL</span>
+  </div>
+
+  <!-- OBJETO HERO — entra segundo, el texto lo rodea -->
+  <div id="hero-object">
+    <div class="product">💵</div>
+    <!-- ↑ REEMPLAZAR con: <img src="producto.png" style="width:600px;object-fit:contain"> -->
+  </div>
+
+  <!-- TEXTO CENTRAL — aparece SOBRE el objeto (mix-blend-mode: difference) -->
+  <div class="text-main">
+    <span>DINERO</span>
+  </div>
+
+  <!-- LÍNEA INFERIOR -->
+  <div class="text-line-bottom">
+    <span>DEJA DE SER<br><span class="accent">EL PROBLEMA</span></span>
+  </div>
+
+  <!-- LATERAL -->
+  <div class="text-line-side">
+    <span>SOLUCIÓN</span>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-container">
+    <div class="cta-pill">ESCRÍBENOS YA</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+// ============================================================
+// TIMELINE GSAP — Motion Graphic Kinético
+// Duración total: 6 segundos a 30fps = 180 frames
+// ============================================================
+
+const tl = gsap.timeline({ paused: true });
+
+// [0s - 0.4s] LÍNEA SUPERIOR entra desde arriba
+tl.to(".text-line-top", {
+  opacity: 1,
+  y: 0,
+  duration: 0.4,
+  ease: "power4.out"
+}, 0)
+
+// [0.3s - 0.8s] OBJETO HERO entra con scale + rotación
+.to("#hero-object", {
+  opacity: 1,
+  scale: 1,
+  rotation: 0,
+  duration: 0.7,
+  ease: "back.out(1.5)"
+}, 0.3)
+
+// [0.6s] TEXTO CENTRAL aparece SOBRE el objeto
+.to(".text-main", {
+  opacity: 1,
+  duration: 0.3,
+  ease: "power2.out"
+}, 0.6)
+
+// [0.8s] LÍNEA LATERAL desliza desde la izquierda
+.to(".text-line-side", {
+  opacity: 1,
+  x: 0,
+  duration: 0.5,
+  ease: "power3.out"
+}, 0.8)
+
+// [1.0s] LÍNEA INFERIOR sube desde abajo
+.to(".text-line-bottom", {
+  opacity: 1,
+  y: 0,
+  duration: 0.5,
+  ease: "power4.out"
+}, 1.0)
+
+// [3.0s] OBJETO pulsea ligeramente (loop de 2s)
+.to("#hero-object", {
+  scale: 1.04,
+  duration: 1,
+  ease: "sine.inOut",
+  yoyo: true,
+  repeat: -1
+}, 3.0)
+
+// [4.5s] Todo excepto CTA se desvanece
+.to([".text-line-top", ".text-main", ".text-line-side"], {
+  opacity: 0,
+  y: -30,
+  duration: 0.4,
+  stagger: 0.08,
+  ease: "power2.in"
+}, 4.5)
+
+// [4.8s] CTA aparece
+.to(".cta-container", {
+  opacity: 1,
+  y: 0,
+  duration: 0.5,
+  ease: "back.out(1.3)"
+}, 4.8);
+
+// ── HyperFrames: exportar timeline ──
+// NO modificar esta línea — HyperFrames la usa para saber cuándo renderizar
+if (typeof window.__hyperframes !== 'undefined') {
+  window.__hyperframes.timeline = tl;
+  window.__hyperframes.duration = 6; // segundos
+} else {
+  // Preview en browser — autoplay
+  tl.play();
+}
+</script>
+</body>
+</html>

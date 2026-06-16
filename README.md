@@ -11,18 +11,15 @@ cd nombre-cliente
 
 # 2. Configurar API keys
 cp .env.example .env
-# Editar .env con tus keys
+# Editar .env con tus keys (Pexels, Higgsfield, Composio, etc.)
 
 # 3. Llenar contexto del cliente
 # Editar context/empresa.md con datos del cliente
 
-# 4. Instalar skills
-npx skills add mvanhorn/last30days-skill
-npx skills add dkyazzentwatwa/chatgpt-skills@mcp-builder
-npx skills add aradotso/trending-skills@agent-browser-automation
-npx skills add nexu-io/open-design@web-design-guidelines
+# 4. Instalar TODOS los skills (3400+ en un comando)
+bash sistema/install-skills.sh
 
-# 5. Conectar Composio (publicación automática)
+# 5. Conectar Composio (publicación automática Instagram, WhatsApp, etc.)
 # Ver sistema/COMPOSIO-SETUP.md
 ```
 
@@ -30,17 +27,26 @@ npx skills add nexu-io/open-design@web-design-guidelines
 
 ```
 context/
-├── empresa.md          ← LLENAR PRIMERO (datos del cliente)
-├── recursos.md         ← Arsenal de herramientas (no tocar)
-├── orquestador.md      ← Cómo se conectan las tools
-├── hooks-library.md    ← Biblioteca de hooks virales
-├── viral-frameworks.md ← Frameworks de viralidad
-└── feedback.md         ← Aprendizajes (se llena solo)
+├── empresa.md              ← LLENAR PRIMERO (datos del cliente)
+├── recursos.md             ← Arsenal completo de herramientas
+├── orquestador.md          ← Cómo se conectan las tools
+├── hooks-library.md        ← Biblioteca de hooks virales
+├── viral-frameworks.md     ← Frameworks de viralidad
+└── feedback.md             ← Aprendizajes (se llena solo)
 
-brain1/entregables/     ← Posts, reels, carruseles, videos (vacío)
-brain2/entregables/     ← Propuestas, reportes, leads (vacío)
-assets/effects/         ← Overlays, transitions, intros reutilizables
-sistema/               ← Scripts TTS, check conexiones, Composio setup
+brain1/
+├── base-projects/
+│   ├── remotion-kinetic/           ← Base Remotion lista (npm install + render)
+│   └── hyperframes-motion-graphic/ ← Base motion graphic GSAP+3D (abrir en browser)
+└── entregables/            ← Posts, reels, carruseles, videos (vacío)
+
+brain2/entregables/         ← Propuestas, reportes, leads (vacío)
+assets/effects/             ← Overlays, transitions, intros HTML reutilizables
+sistema/
+├── install-skills.sh       ← Instala los 3400+ skills de una vez
+├── COMPOSIO-SETUP.md       ← Conexión Instagram, WhatsApp, etc.
+├── tts.sh                  ← Voces en español (sin cuenta)
+└── check-conexiones.sh     ← Verifica que todo esté conectado
 ```
 
 ## Flujo de producción
